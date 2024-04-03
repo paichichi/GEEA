@@ -14,9 +14,9 @@ CUDA_VISIBLE_DEVICES=0 python  main.py \
             --save_model    0 \
             --batch_size    3500 \
             --semi_learn_step 1 \
-	        --csls          \
-	        --csls_k        3 \
-	        --random_seed   42 \
+	          --csls          \
+	          --csls_k        3 \
+	          --random_seed   42 \
             --exp_id        seed_42 \
             --workers       12 \
             --dist          0 \

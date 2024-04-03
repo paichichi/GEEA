@@ -37,6 +37,8 @@ class Runner:
         self.args = args
         self.writer = writer
         self.logger = logger
+
+        # 作为梯度缩放稳定数值
         self.scaler = GradScaler()
         # TODO: model init code
         self.model_list = []
