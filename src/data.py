@@ -449,4 +449,5 @@ def load_img(logger, e_num, path):
     std = np.std(imgs_np, axis=0)
     img_embd = np.array([img_dict[i] if i in img_dict else np.random.normal(mean, std, mean.shape[0]) for i in range(e_num)])
     logger.info(f"{(100 * len(img_dict) / e_num):.2f}% entities have images")
+    logger.info(path)
     return img_embd
