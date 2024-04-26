@@ -39,6 +39,8 @@ class Collator_base(object):
 
 def load_data(logger, args):
     assert args.data_choice in ["DWY", "DBP15K", "FBYG15K", "FBDB15K"]
+
+    #加载数据，如果我们运行双语或者跨模态实验
     if args.data_choice in ["DWY", "DBP15K", "FBYG15K", "FBDB15K"]:
         KGs, non_train, train_ill, test_ill, eval_ill, test_ill_ = load_eva_data(logger, args)
 
@@ -49,19 +51,29 @@ def load_data(logger, args):
 
 
 def load_eva_data(logger, args):
+
+    #加载所需的实验数据
     file_dir = osp.join(args.data_path, args.data_choice, args.data_split)
     lang_list = [1, 2]
     ent2id_dict, ills, triples, r_hs, r_ts, ids = read_raw_data(file_dir, lang_list)
     e1 = os.path.join(file_dir, 'ent_ids_1')
     e2 = os.path.join(file_dir, 'ent_ids_2')
+    #这里包含了 KG1的entity id
     left_ents = get_ids(e1)
+    #这里包含了 KG2的entity id
     right_ents = get_ids(e2)
+
+    #KG1和KG2的数量总和
     ENT_NUM = len(ent2id_dict)
+
+
     REL_NUM = len(r_hs)
     np.random.shuffle(ills)
     data_prefix = ""
     if args.ratio != "1.0":
         data_prefix = f"_{args.ratio}"
+
+    #根据split的方式来选择图片特征
     if "V1" in file_dir:
         split = "norm"
         img_vec_path = osp.join(args.data_path, "pkls/dbpedia_wikidata_15k_norm_GA_id_img_feature_dict.pkl")
@@ -107,6 +119,7 @@ def load_eva_data(logger, args):
 
         train_ill = visual_pivot_induction(args, left_ents, right_ents, input_features, ills, logger)
     else:
+        #选择已经设定好的训练集
         train_ill = np.array(ills[:int(len(ills) // 1 * args.data_rate)], dtype=np.int32)
 
     test_ill_ = ills[int(len(ills) // 1 * args.data_rate):]
@@ -431,7 +444,7 @@ def load_relation(e, KG, topR=1000):
             rel_mat[o][rel_index_dict[r]] += 1.
     return np.array(rel_mat), rel_index_dict
 
-
+# 读取 id image feature
 def load_json_embd(path):
     embd_dict = {}
     with open(path) as f:

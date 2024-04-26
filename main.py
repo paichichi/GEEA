@@ -30,6 +30,8 @@ import copy
 class Runner:
     def __init__(self, args, writer=None, logger=None, rank=0):
         self.datapath = edict()
+
+        #保存 log
         self.datapath.log_dir = get_dump_path(args)
         self.datapath.model_dir = os.path.join(self.datapath.log_dir, 'model')
         self.rank = rank
@@ -488,21 +490,31 @@ class Runner:
 
 
 if __name__ == '__main__':
+    #找数据目录的位置
     cfg = cfg()
+    #预设参数设置-通过parser.add_argument将所有需要的参数全部预设，我们可以通过bash运行程序覆盖原有的预设
     cfg.get_args()
+    #根据add_argument中的参数预设模型的各种配置
     cfgs = cfg.update_train_configs()
+    #设置 random seed
     set_seed(cfgs.random_seed)
+    # 是否为测试模式
     if cfgs.dist and not cfgs.only_test:
         init_distributed_mode(args=cfgs)
     else:
         torch.multiprocessing.set_sharing_strategy('file_system')
+    #初始化 rank为 0
     rank = cfgs.rank
 
+    #初始化 writer 和 logger
     writer, logger = None, None
     if rank == 0:
+        #初始化logger
         logger = initialize_exp(cfgs)
         logger_path = get_dump_path(cfgs)
         cfgs.time_stamp = "{0:%Y-%m-%dT%H-%M-%S/}".format(datetime.now())
+
+        #从config中提取预设的bath_size=128, exp_id 是 experiment id
         comment = f'bath_size={cfgs.batch_size} exp_id={cfgs.exp_id}'
         if not cfgs.no_tensorboard and not cfgs.only_test:
             writer = SummaryWriter(log_dir=os.path.join(logger_path, 'tensorboard', cfgs.time_stamp), comment=comment)
@@ -510,6 +522,8 @@ if __name__ == '__main__':
     cfgs.device = torch.device(cfgs.device)
 
     torch.cuda.set_device(cfgs.gpu)
+
+    #开始运行
     runner = Runner(cfgs, writer, logger, rank)
     if cfgs.only_test:
         runner.test()

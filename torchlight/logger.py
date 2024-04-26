@@ -24,6 +24,7 @@ class LogFormatter():
             timedelta(seconds=elapsed_seconds)
         )
         message = record.getMessage()
+        #这里的message是'============ Initialized logger ============'
         message = message.replace('\n', '\n' + ' ' * (len(prefix) + 3))
         return "%s - %s" % (prefix, message) if message else ''
 
@@ -73,10 +74,12 @@ def initialize_exp(params):
     - create a logger
     """
     # dump parameters
+    #把数据存入我们sweep设定的文件夹
     exp_folder = get_dump_path(params)
     json.dump(vars(params), open(os.path.join(exp_folder, 'params.pkl'), 'w'), indent=4)
 
     # get running command
+    # command 的值为['python', 'C:\\Users\\96446\\Documents\\GitHub\\GEEA\\main.py']
     command = ["python", sys.argv[0]]
     for x in sys.argv[1:]:
         if x.startswith('--'):
@@ -110,10 +113,14 @@ def get_dump_path(params):
     assert len(params.exp_name) > 0
     assert not params.dump_path in ('', None), \
             'Please choose your favorite destination for dump.'
+    #预设的实验保存位置C:\\Users\\96446\\Documents\\GitHub\\data\\mmkg\\dump/
     dump_path = params.dump_path
 
     # create the sweep path if it does not exist
+    #从日期选择文件夹
     when = date.today().strftime('%m%d-')
+
+    #例如C:\\Users\\96446\\Documents\\GitHub\\data\\mmkg\\dump/0409-EA_exp
     sweep_path = os.path.join(dump_path, when + params.exp_name)
     if not os.path.exists(sweep_path):
         subprocess.Popen("mkdir -p %s" % sweep_path, shell=True).wait()

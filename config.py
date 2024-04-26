@@ -12,6 +12,7 @@ class cfg():
         self.data_root = osp.abspath(osp.join(self.this_dir, '..', 'data', ''))
 
     def get_args(self):
+        #预设默认值，bash中的参数设置会覆盖默认设置
         parser = argparse.ArgumentParser()
         parser.add_argument('--gpu', default=0, type=int)
         parser.add_argument('--batch_size', default=128, type=int)
@@ -31,7 +32,7 @@ class cfg():
         parser.add_argument("--data_choice", default="DBP15K", type=str, choices=["DBP15K", "DWY", "FBYG15K", "FBDB15K"], help="Experiment path")
         parser.add_argument("--data_rate", type=float, default=0.3, help="training set rate")
 
-        parser.add_argument("--model_name", default="EVA", type=str, choices=["EVA", "MCLEA", "MSNEA", "MEAformer"], help="model name")
+        parser.add_argument("--model_name", default="MCLEA", type=str, choices=["EVA", "MCLEA", "MSNEA", "MEAformer"], help="model name")
         parser.add_argument("--model_name_save", default="", type=str, help="model name for model load")
 
 
@@ -128,7 +129,7 @@ class cfg():
         assert not (self.cfg.save_model and self.cfg.only_test)
 
         self.cfg.data_root = self.data_root
-
+        #初始化不使用 surface form
         if self.cfg.use_surface:
             self.cfg.w_name = True
             self.cfg.w_char = True
@@ -166,6 +167,7 @@ class cfg():
             if self.cfg.attr_dim >= 300:
                 self.cfg.epoch = min(1000, self.cfg.epoch)
                 self.cfg.il_start = min(500, self.cfg.il_start)
+                #评估周期
                 self.cfg.eval_epoch = min(50, self.cfg.eval_epoch)
 
         self.cfg.dim = self.cfg.attr_dim

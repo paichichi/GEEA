@@ -67,6 +67,7 @@ class MultiModalEncoder(nn.Module):
         self.entity_emb.requires_grad = True
 
 
+        #我们构建线性层，将不同与训练模型的各自的特征空间映射到一个公共空间 300
         self.rel_fc = nn.Linear(1000, attr_dim)
         self.att_fc = nn.Linear(attr_input_dim, attr_dim)
         self.img_fc = nn.Linear(img_feature_dim, img_dim)
