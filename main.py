@@ -1,4 +1,5 @@
 import os
+# os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 import os.path as osp
 import torch
 import numpy as np
@@ -220,6 +221,7 @@ class Runner:
                 self.train(_tqdm)
                 self.loss_log.update(self.curr_loss)
                 self.loss_item = self.loss_log.get_loss()
+                print('self.loss_item', self.loss_item)
                 _tqdm.set_description(f'Train | Ep [{self.epoch}/{self.args.epoch}] Step [{self.step}/{self.args.total_steps}] LR [{self.lr:.5f}] Loss {self.loss_log.get_loss():.5f} ')
                 self.update_loss_log()
                 if (i + 1) % self.args.eval_epoch == 0:

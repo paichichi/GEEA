@@ -6,6 +6,7 @@ from .MCLEA_tools import MultiModalEncoder
 from .MCLEA_loss import CustomMultiLossLayer, ial_loss, icl_loss
 from src.utils import pairwise_distances
 from geea import GEEA
+import pickle
 
 
 class MCLEA(nn.Module):
@@ -76,6 +77,9 @@ class MCLEA(nn.Module):
         loss_all += loss_joi + in_loss + align_loss
 
         geea_loss = self.geea(batch, [gph_emb, img_emb, rel_emb, att_emb, name_emb, char_emb], joint_emb)
+
+        with open('joint_emb', 'wb') as f:
+            pickle.dump(joint_emb, f)
         loss_all += geea_loss
 
         weight_raw = self.multimodal_encoder.fusion.weight.reshape(-1).tolist()
