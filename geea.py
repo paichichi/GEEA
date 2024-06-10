@@ -270,7 +270,7 @@ class GEEA(nn.Module):
             
         
 
-    def post_reconstruction_loss(self, outputs, joint_emb, train_links, left_ents, right_ents):
+    def post_reconstruction_loss (self, outputs, joint_emb, train_links, left_ents, right_ents):
 
         xx, yy, xy, yx = [], [], [], []
 
